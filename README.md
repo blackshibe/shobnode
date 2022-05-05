@@ -9,7 +9,7 @@ Animation library meant for the blender-roblox animation workflow<br/>
 -   integer animation priority
 -   editing animations at runtime
 -   preloading animations
--   separation of concerns into Tracks and Poses
+-   separation of concerns into Tracks and Poses (better performance for static, looped animations)
 
 ## usability notice
 
