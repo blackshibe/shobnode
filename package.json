@@ -20,7 +20,7 @@
 	},
 	"devDependencies": {
 		"@rbxts/compiler-types": "^1.2.7-types.0",
-		"@rbxts/types": "^1.0.551"
-	},
-	"dependencies": {}
+		"@rbxts/types": "^1.0.551",
+		"gh-pages": "^3.2.3"
+	}
 }
