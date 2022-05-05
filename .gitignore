@@ -1,4 +1,8 @@
-/node_modules
-/out
-/include
+# personal file
+./pack.sh
+
+./node_modules
+./out
+./include
+
 *.tsbuildinfo
