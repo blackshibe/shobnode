@@ -1,0 +1,23 @@
+site_name: Canim Documentation
+theme:
+    name: material
+    palette:
+        scheme: slate
+    highlightjs: true
+    hljs_languages:
+        - lua
+        - ts
+    icon:
+        repo: fontawesome/brands/github
+markdown_extensions:
+    - admonition
+    - codehilite:
+          guess_lang: false
+    - toc:
+          permalink: true
+    - pymdownx.superfences
+repo_url: https://github.com/blackshibe/canim
+extra:
+    social:
+        - icon: fontawesome/brands/github
+          link: https://github.com/blackshibe/canim

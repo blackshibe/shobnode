@@ -53,7 +53,7 @@ export const cache_get_keyframe_sequence = (id: string): KeyframeSequence => {
 		return cache_get_keyframe_sequence(id);
 	}
 
-	// a new call is generated to clone the keyframe
+	// a new call is made to clone the keyframe
 	cached_tracks[id] = sequence;
 	return cache_get_keyframe_sequence(id);
 };
@@ -425,22 +425,23 @@ export class Canim {
 					const b = last.children[value.name];
 
 					const unbiased_cframe = a.cframe.Lerp(b.cframe, bias);
-					const weight = track.bone_weights[value.name];
+					let weight = track.bone_weights[value.name] || track.bone_weights["__CANIM_DEFAULT_BONE_WEIGHT"];
+					let simple_weight = track.weight;
 
 					let blended_cframe = unbiased_cframe;
 					if (weight) {
 						let components = blended_cframe.ToEulerAnglesXYZ();
 						blended_cframe = new CFrame(
-							unbiased_cframe.X * weight[0][0],
-							unbiased_cframe.Y * weight[0][1],
-							unbiased_cframe.Z * weight[0][2]
+							unbiased_cframe.X * weight[0][0] * simple_weight,
+							unbiased_cframe.Y * weight[0][1] * simple_weight,
+							unbiased_cframe.Z * weight[0][2] * simple_weight
 						);
 
 						blended_cframe = blended_cframe.mul(
 							CFrame.Angles(
-								components[0] * weight[1][0],
-								components[1] * weight[1][1],
-								components[2] * weight[1][2]
+								components[0] * weight[1][0] * simple_weight,
+								components[1] * weight[1][1] * simple_weight,
+								components[2] * weight[1][2] * simple_weight
 							)
 						);
 					}
