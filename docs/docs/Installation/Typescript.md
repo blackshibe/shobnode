@@ -16,9 +16,6 @@ animator.assign_model(character);
 let animation = animator.load_animation("dance", 1, "rbxassetid://507771019");
 animation.finished_loading.Wait();
 
-// automatic retrying is not implemented
-if (!animation.sequence) throw "animation couldn't load";
-
 // the animation will play with lowered rotation and with unaffected position
 animation.looped = true;
 animation.bone_weights.__CANIM_DEFAULT_BONE_WEIGHT = [
