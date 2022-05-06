@@ -24,11 +24,6 @@ type customKeyframeSequence = { name: string; children: customKeyframe[] };
 	Reason for the constant type assertion in this module is because animations have a defined structure while 
 	typescript thinks otherwise. Performance while keeping type control over the inner workings of this class were needed.
 */
-
-/*
-	GET function for the customAnimator. Caches animationTracks and keeps them in memory,
-	meaning consecutive loading is instant.
-*/
 const active_requests: { [index: string]: boolean } = {};
 export const cache_get_keyframe_sequence = (id: string): KeyframeSequence => {
 	// prevents a race condition
@@ -143,10 +138,6 @@ class CanimPose {
 	}
 }
 
-/* 
-	Base class for the animator tracks.
-	handles loading.
-*/
 class CanimTrack {
 	sequence?: customKeyframeSequence;
 	last_keyframe?: customKeyframe;
@@ -220,9 +211,6 @@ class CanimTrack {
 	}
 }
 
-/* 
-	Base class.
-*/
 type transition = {
 	start: number;
 	finish: number;
@@ -240,23 +228,19 @@ export class Canim {
 
 	transitions: {
 		[index: string]:
-			| Array<{
-					start: number;
-					finish: number;
-					cframe: CFrame;
-			  }>
-			| undefined;
+		| Array<{
+			start: number;
+			finish: number;
+			cframe: CFrame;
+		}>
+		| undefined;
 	} = {};
 
 	model?: Model;
 	maid = new Maid();
-
-	// used for displaying playing tracks
 	debug: string[] = [];
 
-	constructor() {
-		// this.maid.GiveTask(RunService.PreAnimation.Connect((delta_time: number) => this.update(delta_time)));
-	}
+	constructor() { }
 
 	assign_model(model: Model) {
 		this.model = model;
