@@ -18,17 +18,10 @@ declare type transition = {
 	cframe: CFrame;
 };
 
-<<<<<<< HEAD
-/*
-	Reason for the constant type assertion in this module is because animations have a defined structure while 
-	typescript thinks otherwise. Performance while keeping type control over the inner workings of this class were needed.
-*/
-=======
 declare type customPose = { name: string; cframe: CFrame; weight: number };
 declare type customKeyframe = { name: string; time: number; children: { [index: string]: customPose } };
 declare type customKeyframeSequence = { name: string; children: customKeyframe[] };
 
->>>>>>> 0b3d7fd (Update docs to include complete tutorials, minor changes to structure)
 const active_requests: { [index: string]: boolean } = {};
 export const cache_get_keyframe_sequence = (id: string): KeyframeSequence => {
 	// prevents a race condition
@@ -137,11 +130,7 @@ export class CanimPose {
 	}
 }
 
-<<<<<<< HEAD
-class CanimTrack {
-=======
 export class CanimTrack {
->>>>>>> 0b3d7fd (Update docs to include complete tutorials, minor changes to structure)
 	sequence?: customKeyframeSequence;
 	last_keyframe?: customKeyframe;
 	rebase_target?: CanimPose;
@@ -215,15 +204,6 @@ export class CanimTrack {
 	}
 }
 
-<<<<<<< HEAD
-type transition = {
-	start: number;
-	finish: number;
-	cframe: CFrame;
-};
-
-=======
->>>>>>> 0b3d7fd (Update docs to include complete tutorials, minor changes to structure)
 export class Canim {
 	identified_bones: { [index: string]: Motor6D | undefined } = {};
 	playing_animations: CanimTrack[] = [];
@@ -235,19 +215,19 @@ export class Canim {
 
 	transitions: {
 		[index: string]:
-		| Array<{
-			start: number;
-			finish: number;
-			cframe: CFrame;
-		}>
-		| undefined;
+			| Array<{
+					start: number;
+					finish: number;
+					cframe: CFrame;
+			  }>
+			| undefined;
 	} = {};
 
 	model?: Model;
 	maid = new Maid();
 	debug: string[] = [];
 
-	constructor() { }
+	constructor() {}
 
 	assign_model(model: Model) {
 		this.model = model;
