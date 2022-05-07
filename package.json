@@ -1,19 +1,24 @@
 {
 	"name": "@rbxts/canim",
 	"version": "0.1.0",
-	"description": "canim is a roblox-ts library that allows you to have more control over your animations.",
+	"description": "Custom animator implementation that allows you to have more control over your animations.",
 	"main": "out/init.lua",
+	"types": "out/index.d.ts",
 	"scripts": {
 		"build": "rbxtsc",
 		"watch": "rbxtsc -w",
 		"prepublishOnly": "npm run build"
 	},
-	"keywords": [],
-	"repository": "https://github.com/blackshibe/canim",
+	"keywords": [
+		"roblox-ts"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/blackshibe/canim"
+	},
 	"homepage": "https://blackshibe.github.io/canim",
 	"author": "blackshibe",
 	"license": "MIT",
-	"types": "out/index.d.ts",
 	"files": [
 		"out"
 	],
@@ -22,7 +27,6 @@
 	},
 	"devDependencies": {
 		"@rbxts/compiler-types": "^1.2.7-types.0",
-		"@rbxts/types": "^1.0.551",
-		"gh-pages": "^3.2.3"
+		"@rbxts/types": "^1.0.551"
 	}
 }
