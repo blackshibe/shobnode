@@ -7,7 +7,7 @@ The class used for tracks in the library. It shares many similiarities with Cani
 ---
 
 ### CanimTrack.load_sequence
-```
+```ts
 CanimTrack.load_sequence(id: string | KeyframeSequence): void
 ```
 
@@ -21,7 +21,7 @@ Loads the AnimationTrack for the track. Does not yield and fires finished_loadin
 ---
 
 ### CanimTrack.keyframe_reached
-```
+```ts
 CanimTrack.keyframe_reached: Signal
 ```
 
@@ -30,7 +30,7 @@ Fires when a named keyframe is stepped over by the animator.
 ---
 
 ### CanimTrack.finished_loading
-```
+```ts
 CanimTrack.finished_loading: Signal
 ```
 
@@ -39,7 +39,7 @@ Fires when the animation finishes loading.
 ---
 
 ### CanimTrack.started
-```
+```ts
 CanimTrack.started: Signal
 ```
 
@@ -48,7 +48,7 @@ Fires when the animation starts.
 ---
 
 ### CanimTrack.finished
-```
+```ts
 CanimTrack.finished: Signal
 ```
 
@@ -61,7 +61,7 @@ Fires when the animation ends.
 ---
 
 ### CanimTrack.sequence
-```
+```ts
 CanimTrack.sequence?: customKeyframe
 ```
 
@@ -71,7 +71,7 @@ nil if the animation is unloaded.
 ---
 
 ### CanimTrack.bone_weights
-```
+```ts
 CanimTrack.bone_weights: { [index: string]: number | undefined } = {};
 ```
 
@@ -92,7 +92,7 @@ you can use `__CANIM_DEFAULT_BONE_WEIGHT` for the index to affect all bones:
 ---
 
 ### CanimTrack.name
-```
+```ts
 CanimTrack.name: string
 ```
 
@@ -101,7 +101,7 @@ Name of the track.
 ---
 
 ### CanimTrack.priority
-```
+```ts
 CanimTrack.priority: number
 ```
 
@@ -110,7 +110,7 @@ Priority of the track.
 ---
 
 ### CanimTrack.fading
-```
+```ts
 CanimTrack.fading: boolean
 ```
 
@@ -119,7 +119,7 @@ Whether the track is fading out.
 ---
 
 ### CanimTrack.fade_time
-```
+```ts
 CanimTrack.fade_time: number
 ```
 
@@ -128,7 +128,7 @@ Controls how quickly the track fades out after stopping.
 ---
 
 ### CanimTrack.loaded
-```
+```ts
 CanimTrack.loaded: boolean
 ```
 
@@ -137,7 +137,7 @@ Whether the track is loaded.
 ---
 
 ### CanimTrack.stopping
-```
+```ts
 CanimTrack.stopping: boolean
 ```
 
@@ -146,7 +146,7 @@ If true, the track will stop playing at the next `Canim.update` call.
 ---
 
 ### CanimTrack.playing
-```
+```ts
 CanimTrack.playing: boolean
 ```
 
@@ -155,7 +155,7 @@ Whether the track is playing.
 ---
 
 ### CanimTrack.speed
-```
+```ts
 CanimTrack.speed: number
 ```
 
@@ -164,7 +164,7 @@ Speed of the track. deltatime from `Canim.update()` is multiplied by this functi
 ---
 
 ### CanimTrack.time
-```
+```ts
 CanimTrack.time: number
 ```
 
@@ -173,7 +173,7 @@ How long the animation has played for.
 ---
 
 ### CanimTrack.length
-```
+```ts
 CanimTrack.length: number
 ```
 
@@ -183,7 +183,7 @@ How long the track is, in seconds.
 ---
 
 ### CanimTrack.looped
-```
+```ts
 CanimTrack.looped: number
 ```
 
@@ -192,7 +192,7 @@ Controls whether the track will automatically restart once it reaches the end.
 ---
 
 ### CanimTrack.queued_animation
-```
+```ts
 CanimTrack.queued_animation?: CanimTrack
 ```
 
@@ -204,7 +204,7 @@ Temporary property to make sure animations run seamlessly, one after the other.
 ---
 
 ### CanimTrack.rebase_target
-```
+```ts
 CanimTrack.rebase_target?: CanimTrack
 ```
 
@@ -214,7 +214,7 @@ TODO: better documentation
 ---
 
 ### CanimTrack.rebase_basis
-```
+```ts
 CanimTrack.rebase_basis?: CanimTrack
 ```
 
@@ -224,7 +224,7 @@ TODO: better documentation
 ---
 
 ### CanimTrack.sequence
-```
+```ts
 CanimTrack.sequence?: customKeyframeSequence
 ```
 
@@ -233,7 +233,7 @@ Animation data used by the animator.
 ---
 
 ### CanimTrack.transition_disable
-```
+```ts
 CanimTrack.transition_disable: { [index: string]: boolean }
 ```
 
@@ -242,7 +242,7 @@ If a Motor6D name is included in this table, transitions will not play for it.
 ---
 
 ### CanimTrack.transition_disable_all
-```
+```ts
 CanimTrack.transition_disable_all: boolean
 ```
 

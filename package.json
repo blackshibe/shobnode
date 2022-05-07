@@ -9,8 +9,10 @@
 		"prepublishOnly": "npm run build"
 	},
 	"keywords": [],
-	"author": "",
-	"license": "ISC",
+	"repository": "https://github.com/blackshibe/canim",
+	"homepage": "https://blackshibe.github.io/canim",
+	"author": "blackshibe",
+	"license": "MIT",
 	"types": "out/index.d.ts",
 	"files": [
 		"out"

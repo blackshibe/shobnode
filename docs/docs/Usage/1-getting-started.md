@@ -55,7 +55,7 @@ game.GetService("RunService").RenderStepped.Connect((delta_time) => {
 });
 ```
 
-You must assign a character to the animator you create:
+You must assign a rig to the animator you create:
 ```ts
 let character = game.GetService("Workspace").WaitForChild("dummy") as Model;
 let animator = new Canim();

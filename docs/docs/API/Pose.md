@@ -7,7 +7,7 @@ The class used for poses in the library. It shares many similiarities with Canim
 ---
 
 ### CanimPose.load_sequence
-```
+```ts
 CanimPose.load_sequence(id: string | KeyframeSequence): void
 ```
 
@@ -21,7 +21,7 @@ Loads the AnimationTrack for the pose. Does not yield and fires finished_loading
 ---
 
 ### CanimPose.keyframe_reached
-```
+```ts
 CanimPose.keyframe_reached: Signal
 ```
 
@@ -30,7 +30,7 @@ Fires when a named keyframe is stepped over by the animator.
 ---
 
 ### CanimPose.finished_loading
-```
+```ts
 CanimPose.finished_loading: Signal
 ```
 
@@ -39,7 +39,7 @@ Fires when the animation finishes loading.
 ---
 
 ### CanimPose.started
-```
+```ts
 CanimPose.started: Signal
 ```
 
@@ -48,7 +48,7 @@ Fires when the animation starts.
 ---
 
 ### CanimPose.finished
-```
+```ts
 CanimPose.finished: Signal
 ```
 
@@ -59,7 +59,7 @@ Fires when the animation ends.
 ---
 
 ### CanimPose.keyframe
-```
+```ts
 CanimPose.keyframe?: customKeyframe
 ```
 
@@ -69,7 +69,7 @@ nil if the animation is unloaded.
 ---
 
 ### CanimPose.bone_weights
-```
+```ts
 CanimPose.bone_weights: { [index: string]: number | undefined } = {};
 ```
 
@@ -90,7 +90,7 @@ you can use `__CANIM_DEFAULT_BONE_WEIGHT` for the index to affect all bones:
 ---
 
 ### CanimPose.name
-```
+```ts
 CanimPose.name: string
 ```
 
@@ -99,7 +99,7 @@ Name of the pose.
 ---
 
 ### CanimPose.priority
-```
+```ts
 CanimPose.priority: number
 ```
 
@@ -108,7 +108,7 @@ Priority of the pose.
 ---
 
 ### CanimPose.fading
-```
+```ts
 CanimPose.fading: boolean
 ```
 
@@ -117,7 +117,7 @@ Whether the pose is fading out.
 ---
 
 ### CanimPose.fade_time
-```
+```ts
 CanimPose.fade_time: number
 ```
 
@@ -126,7 +126,7 @@ Controls how quickly the pose fades out after stopping.
 ---
 
 ### CanimTrack.loaded
-```
+```ts
 CanimTrack.loaded: boolean
 ```
 
@@ -135,7 +135,7 @@ Whether the track is loaded.
 ---
 
 ### CanimPose.stopping
-```
+```ts
 CanimPose.stopping: boolean
 ```
 
@@ -144,7 +144,7 @@ If true, the Pose will stop playing at the next `Canim.update` call.
 ---
 
 ### CanimPose.time
-```
+```ts
 CanimPose.time: number
 ```
 
