@@ -1,6 +1,6 @@
 # Luau
 
-TODO: Setup a download source for Luau
+You can grab a release roblox model in the releases page on the [Github](https://github.com/blackshibe/canim/releases/).
 
 ```lua
 local Canim = require(path.to.canim).Canim
