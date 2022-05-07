@@ -2,33 +2,26 @@ import Signal from "./lib/Signal";
 import Maid from "./lib/Maid";
 
 const RunService = game.GetService("RunService");
-const HttpService = game.GetService("HttpService");
-
-const map = (value: number, in_min: number, in_max: number, out_min: number, out_max: number) =>
-	((value - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
 
 const KeyframeSequenceProvider = game.GetService("KeyframeSequenceProvider");
 const cached_tracks: { [index: string]: KeyframeSequence | undefined } = {};
 
-type signalInfo = {
+declare type signalInfo = {
 	played: boolean;
 	name: string;
 	time: number;
 };
 
-type customPose = { name: string; cframe: CFrame; weight: number };
-type customKeyframe = { name: string; time: number; children: { [index: string]: customPose } };
-type customKeyframeSequence = { name: string; children: customKeyframe[] };
+declare type transition = {
+	start: number;
+	finish: number;
+	cframe: CFrame;
+};
 
-/*
-	Reason for the constant type assertion in this module is because animations have a defined structure while 
-	typescript thinks otherwise. Performance while keeping type control over the inner workings of this class were needed.
-*/
+declare type customPose = { name: string; cframe: CFrame; weight: number };
+declare type customKeyframe = { name: string; time: number; children: { [index: string]: customPose } };
+declare type customKeyframeSequence = { name: string; children: customKeyframe[] };
 
-/*
-	GET function for the customAnimator. Caches animationTracks and keeps them in memory,
-	meaning consecutive loading is instant.
-*/
 const active_requests: { [index: string]: boolean } = {};
 export const cache_get_keyframe_sequence = (id: string): KeyframeSequence => {
 	// prevents a race condition
@@ -47,7 +40,6 @@ export const cache_get_keyframe_sequence = (id: string): KeyframeSequence => {
 		warn(`GetKeyframeSequenceAsync() failed for id ${id}`);
 		warn(fail);
 
-		task.wait(1 / 30);
 		active_requests[id] = false;
 
 		return cache_get_keyframe_sequence(id);
@@ -57,10 +49,9 @@ export const cache_get_keyframe_sequence = (id: string): KeyframeSequence => {
 	cached_tracks[id] = sequence;
 	return cache_get_keyframe_sequence(id);
 };
-
-const ease_in_out_quad = (x: number) => {
-	return x < 0.5 ? 2 * x * x : 1 - math.pow(-2 * x + 2, 2) / 2;
-};
+const ease_in_out_quad = (x: number) => (x < 0.5 ? 2 * x * x : 1 - math.pow(-2 * x + 2, 2) / 2);
+const map = (value: number, in_min: number, in_max: number, out_min: number, out_max: number) =>
+	((value - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
 
 const convert_pose_instance = (pose: Pose): customPose => {
 	return {
@@ -97,10 +88,7 @@ const convert_keyframe_sequence_instance = (sequence: KeyframeSequence): customK
 	};
 };
 
-/*
-	A pose is much faster to playback than an "idle" animation.
-*/
-class CanimPose {
+export class CanimPose {
 	keyframe?: customKeyframe;
 	keyframe_reached = new Signal<(name: string) => void>();
 	finished_loading = new Signal<() => void>();
@@ -118,7 +106,6 @@ class CanimPose {
 	time = 0;
 	looped = false;
 	stopping = false;
-	fading = false;
 	fade_time = 0.5;
 	fade_start = tick();
 
@@ -143,11 +130,7 @@ class CanimPose {
 	}
 }
 
-/* 
-	Base class for the animator tracks.
-	handles loading.
-*/
-class CanimTrack {
+export class CanimTrack {
 	sequence?: customKeyframeSequence;
 	last_keyframe?: customKeyframe;
 	rebase_target?: CanimPose;
@@ -165,7 +148,6 @@ class CanimTrack {
 	bone_weights: { [index: string]: [[number, number, number], [number, number, number]] | undefined } = {};
 
 	name = "animation_track";
-	id = "";
 
 	stopping = false;
 	loaded = false;
@@ -175,13 +157,13 @@ class CanimTrack {
 	time = 0;
 	length = 0;
 	looped = false;
+	fade_time = 0.5;
 	transition_disable_all = false;
 	playing = false;
 
 	load_sequence(id: string | KeyframeSequence) {
 		task.spawn(() => {
 			this.signals = [];
-			this.id = typeIs(id, "Instance") ? "" : id;
 
 			const sequence = typeIs(id, "Instance") ? id : cache_get_keyframe_sequence(id);
 			sequence.Name = this.name;
@@ -209,6 +191,8 @@ class CanimTrack {
 
 			this.sequence = actual_sequence;
 			this.length = highest_keyframe.time;
+			// roblox-ts types fucked up, https://developer.roblox.com/en-us/api-reference/property/KeyframeSequence/Loop
+			this.looped = (sequence as unknown as { Loop: boolean }).Loop;
 			this.last_keyframe = highest_keyframe;
 
 			// a race condition may happen if the event isn't deferred
@@ -219,15 +203,6 @@ class CanimTrack {
 		});
 	}
 }
-
-/* 
-	Base class.
-*/
-type transition = {
-	start: number;
-	finish: number;
-	cframe: CFrame;
-};
 
 export class Canim {
 	identified_bones: { [index: string]: Motor6D | undefined } = {};
@@ -274,6 +249,10 @@ export class Canim {
 			track.keyframe_reached.Destroy();
 			track.started.Destroy();
 			track.finished.Destroy();
+		}
+
+		for (const [_, value] of pairs(this.identified_bones)) {
+			value.Transform = new CFrame();
 		}
 	}
 
@@ -370,16 +349,14 @@ export class Canim {
 					// transition to idle once the animation is ready for it
 					if (track.last_keyframe) {
 						if (track.queued_animation) this.play_animation(track.queued_animation.name);
-
 						track.finished.Fire();
 
 						for (const [_, value] of pairs(track.last_keyframe.children)) {
-							this.transitions[value.name] = this.transitions[value.name] || [];
-
+							this.transitions[value.name] ??= [];
 							if (!track.transition_disable[value.name] && !track.transition_disable_all) {
 								this.transitions[value.name]!.push({
 									start: tick(),
-									finish: tick() + 1,
+									finish: tick() + track.fade_time,
 									cframe: value.cframe,
 								});
 							}
@@ -417,6 +394,7 @@ export class Canim {
 				}
 			}
 
+			track.last_keyframe = first;
 			const bias = map(track.time, first.time, last.time, 0, 1);
 			for (const [_, value] of pairs(first.children)) {
 				const bone = this.identified_bones[value.name];
