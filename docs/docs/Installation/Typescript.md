@@ -1,5 +1,8 @@
 # Typescript
 
+
+TODO: Publish the package
+
 simply run `npm i @rbxts/canim` inside a roblox-ts project.
 
 You should be able to use canim now:

@@ -8,7 +8,7 @@ The class used for poses in the library. It shares many similiarities with Canim
 
 ### CanimPose.load_sequence
 ```
-cache_get_keyframe_sequence(id: string): KeyframeSequence
+CanimPose.load_sequence(id: string | KeyframeSequence): void
 ```
 
 Loads the AnimationTrack for the pose. Does not yield and fires finished_loading when it's finished.
@@ -25,7 +25,7 @@ Loads the AnimationTrack for the pose. Does not yield and fires finished_loading
 CanimPose.keyframe_reached: Signal
 ```
 
-Fires when a named keyframe is stepped over in the animator.
+Fires when a named keyframe is stepped over by the animator.
 
 ---
 
@@ -122,6 +122,15 @@ CanimPose.fade_time: number
 ```
 
 Controls how quickly the pose fades out after stopping.
+
+---
+
+### CanimTrack.loaded
+```
+CanimTrack.loaded: boolean
+```
+
+Whether the track is loaded.
 
 ---
 

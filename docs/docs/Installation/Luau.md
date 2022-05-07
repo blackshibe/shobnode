@@ -1,6 +1,6 @@
 # Luau
 
-Imagine using Luau
+TODO: Setup a download source for Luau
 
 ```lua
 local Canim = require(path.to.canim).Canim
@@ -14,11 +14,6 @@ animator:assign_model(character)
 -- loading poses is the same, but only the 1st keyframe is used.
 local animation = animator:load_animation("dance", 1, "rbxassetid://507771019")
 animation.finished_loading:Wait()
-
--- automatic retrying is not implemented
-if not animation.sequence then
-	error("animation couldn't load")
-end
 
 -- the animation will play with lowered rotation and with unaffected position
 animation.looped = true

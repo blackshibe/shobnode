@@ -1,4 +1,7 @@
 site_name: Canim Documentation
+plugins:
+    - mkdocs-video
+
 theme:
     name: material
     palette:
@@ -9,6 +12,7 @@ theme:
         - ts
     icon:
         repo: fontawesome/brands/github
+
 markdown_extensions:
     - admonition
     - codehilite:
@@ -16,10 +20,7 @@ markdown_extensions:
     - toc:
           permalink: true
     - pymdownx.superfences
+
 repo_url: https://github.com/blackshibe/canim
-extra:
-    social:
-        - icon: fontawesome/brands/github
-          link: https://github.com/blackshibe/canim
 extra_css:
     - stylesheets/extra.css
