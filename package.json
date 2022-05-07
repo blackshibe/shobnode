@@ -1,7 +1,7 @@
 {
 	"name": "@rbxts/canim",
-	"version": "1.0.0",
-	"description": "",
+	"version": "0.1.0",
+	"description": "canim is a roblox-ts library that allows you to have more control over your animations.",
 	"main": "out/init.lua",
 	"scripts": {
 		"build": "rbxtsc",

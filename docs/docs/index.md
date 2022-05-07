@@ -3,7 +3,7 @@
     While it works without issues in production, there may be problems I am unaware of.<br/>
     If you have questions or issues, feel free to contact me on Discord (Black Shibe#4208)
 
-canim is a roblox-ts written library that allows you to have more control over your animations.
+canim is a roblox-ts library that allows you to have more control over your animations.
 
 ## Features
 
