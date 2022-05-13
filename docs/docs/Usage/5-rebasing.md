@@ -6,9 +6,6 @@ The general behavior is that specifying both properties is proper rebasing, whil
 
 I will bring out a custom rig for this one, as well as a few animations.
 
-!!! caution
-    Fade-out transitions don't work well on rebased animations. Currently, it's best to turn them off.
-
 UMP45 & PP19. We will use the idle for both rigs to bring the Reload and Magcheck from one to the other.
 ![rig1](img/rig.png)
 

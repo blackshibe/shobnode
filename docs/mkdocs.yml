@@ -24,3 +24,8 @@ markdown_extensions:
 repo_url: https://github.com/blackshibe/canim
 extra_css:
     - stylesheets/extra.css
+
+# required:
+# mkdocs
+# mkdocs-video
+# mkdocs-material

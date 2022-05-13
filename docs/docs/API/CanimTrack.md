@@ -36,6 +36,9 @@ CanimTrack.finished_loading: Signal
 
 Fires when the animation finishes loading.
 
+!!! caution
+	This overwrites the looped property of the pose, so set it after the track finishes loading if you are overwriting it.
+
 ---
 
 ### CanimTrack.started
