@@ -452,28 +452,30 @@ export class Canim {
 				if (bone) {
 					const a = value;
 					const b = last.children[value.name];
+					const unblended_cframe = a.cframe.Lerp(b.cframe, bias);
 
-					const unbiased_cframe = a.cframe.Lerp(b.cframe, bias);
-					let weight = track.bone_weights[value.name] || track.bone_weights["__CANIM_DEFAULT_BONE_WEIGHT"];
-					let simple_weight = track.weight;
+					let weight = track.bone_weights[value.name] ||
+						track.bone_weights["__CANIM_DEFAULT_BONE_WEIGHT"] || [
+							[1, 1, 1],
+							[1, 1, 1],
+						];
 
-					let blended_cframe = unbiased_cframe;
-					if (weight) {
-						let components = blended_cframe.ToEulerAnglesXYZ();
-						blended_cframe = new CFrame(
-							unbiased_cframe.X * weight[0][0] * simple_weight,
-							unbiased_cframe.Y * weight[0][1] * simple_weight,
-							unbiased_cframe.Z * weight[0][2] * simple_weight
-						);
+					let blended_cframe = unblended_cframe;
+					let components = blended_cframe.ToEulerAnglesXYZ();
 
-						blended_cframe = blended_cframe.mul(
-							CFrame.Angles(
-								components[0] * weight[1][0] * simple_weight,
-								components[1] * weight[1][1] * simple_weight,
-								components[2] * weight[1][2] * simple_weight
-							)
-						);
-					}
+					blended_cframe = new CFrame(
+						unblended_cframe.X * weight[0][0] * track.weight,
+						unblended_cframe.Y * weight[0][1] * track.weight,
+						unblended_cframe.Z * weight[0][2] * track.weight
+					);
+
+					blended_cframe = blended_cframe.mul(
+						CFrame.Angles(
+							components[0] * weight[1][0] * track.weight,
+							components[1] * weight[1][1] * track.weight,
+							components[2] * weight[1][2] * track.weight
+						)
+					);
 
 					if (
 						track.rebase_target &&
