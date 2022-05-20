@@ -20,6 +20,52 @@ declare type transition = {
 declare type customPose = { name: string; cframe: CFrame; weight: number };
 declare type customKeyframe = { name: string; time: number; children: { [index: string]: customPose } };
 declare type customKeyframeSequence = { name: string; children: customKeyframe[] };
+declare type easingFunction = (alpha: number) => number;
+
+// easing.d.ts isn't exported when the package is packed so the types have to be copied over into here
+interface easingType {
+	linear: easingFunction;
+	quad_in: easingFunction;
+	quad_out: easingFunction;
+	quad_in_out: easingFunction;
+	quad_out_in: easingFunction;
+	cubic_in: easingFunction;
+	cubic_out: easingFunction;
+	cubic_in_out: easingFunction;
+	cubic_out_in: easingFunction;
+	quart_in: easingFunction;
+	quart_out: easingFunction;
+	quart_in_out: easingFunction;
+	quart_out_in: easingFunction;
+	quint_in: easingFunction;
+	quint_out: easingFunction;
+	quint_in_out: easingFunction;
+	quint_out_in: easingFunction;
+	sine_in: easingFunction;
+	sine_out: easingFunction;
+	sine_in_out: easingFunction;
+	sine_out_in: easingFunction;
+	expo_in: easingFunction;
+	expo_out: easingFunction;
+	expo_in_out: easingFunction;
+	expo_out_in: easingFunction;
+	circ_in: easingFunction;
+	circ_out: easingFunction;
+	circ_in_out: easingFunction;
+	circ_out_in: easingFunction;
+	elastic_in: easingFunction;
+	elastic_out: easingFunction;
+	elastic_in_out: easingFunction;
+	elastic_out_in: easingFunction;
+	back_in: easingFunction;
+	back_out: easingFunction;
+	back_in_out: easingFunction;
+	back_out_in: easingFunction;
+	bounce_in: easingFunction;
+	bounce_out: easingFunction;
+	bounce_in_out: easingFunction;
+	bounce_out_in: easingFunction;
+}
 
 const cached_tracks: { [index: string]: KeyframeSequence | undefined } = {};
 const active_caching_requests: { [index: string]: boolean } = {};
@@ -234,7 +280,7 @@ export class Canim {
 
 	constructor() {}
 
-	assign_model(model: Instance) {
+	assign_model(model: Model) {
 		this.model = model;
 		this.model.GetDescendants().forEach((element) => {
 			if (element.IsA("Motor6D") && element.Part1) {
@@ -357,9 +403,7 @@ export class Canim {
 							for (const [_, value] of pairs(track.last_keyframe.children)) {
 								this.transitions[value.name] ??= [];
 								if (!track.transition_disable[value.name] && !track.transition_disable_all) {
-									const bone = this.identified_bones[value.name];
 									let cframe = value.cframe;
-
 									this.transitions[value.name]!.push({
 										start: tick(),
 										finish: tick() + track.fade_time,
@@ -543,4 +587,4 @@ export class Canim {
 	}
 }
 
-export const CanimEasing = easing;
+export const CanimEasing = easing as easingType;
