@@ -1,10 +1,9 @@
-import Signal from "./lib/Signal";
-import Maid from "./lib/Maid";
+import Signal from "./dependencies/Signal";
+import Maid from "./dependencies/Maid";
+import easing from "../src/easing/easing";
 
 const RunService = game.GetService("RunService");
-
 const KeyframeSequenceProvider = game.GetService("KeyframeSequenceProvider");
-const cached_tracks: { [index: string]: KeyframeSequence | undefined } = {};
 
 declare type signalInfo = {
 	played: boolean;
@@ -22,25 +21,26 @@ declare type customPose = { name: string; cframe: CFrame; weight: number };
 declare type customKeyframe = { name: string; time: number; children: { [index: string]: customPose } };
 declare type customKeyframeSequence = { name: string; children: customKeyframe[] };
 
-const active_requests: { [index: string]: boolean } = {};
+const cached_tracks: { [index: string]: KeyframeSequence | undefined } = {};
+const active_caching_requests: { [index: string]: boolean } = {};
 export const cache_get_keyframe_sequence = (id: string): KeyframeSequence => {
 	// prevents a race condition
-	while (active_requests[id]) RunService.Heartbeat.Wait();
+	while (active_caching_requests[id]) RunService.Heartbeat.Wait();
 
 	let sequence = cached_tracks[id];
 	if (sequence) return sequence.Clone();
 
 	const [success, fail] = pcall(() => {
-		active_requests[id] = true;
+		active_caching_requests[id] = true;
 		sequence = KeyframeSequenceProvider.GetKeyframeSequenceAsync(id);
-		active_requests[id] = false;
+		active_caching_requests[id] = false;
 	});
 
 	if (!success || !sequence) {
 		warn(`GetKeyframeSequenceAsync() failed for id ${id}`);
 		warn(fail);
 
-		active_requests[id] = false;
+		active_caching_requests[id] = false;
 
 		return cache_get_keyframe_sequence(id);
 	}
@@ -49,9 +49,11 @@ export const cache_get_keyframe_sequence = (id: string): KeyframeSequence => {
 	cached_tracks[id] = sequence;
 	return cache_get_keyframe_sequence(id);
 };
-const ease_in_out_quad = (x: number) => (x < 0.5 ? 2 * x * x : 1 - math.pow(-2 * x + 2, 2) / 2);
+
 const map = (value: number, in_min: number, in_max: number, out_min: number, out_max: number) =>
 	((value - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
+
+// conversion functions that go from Roblox format to canim
 
 const convert_pose_instance = (pose: Pose): customPose => {
 	return {
@@ -106,7 +108,7 @@ export class CanimPose {
 	time = 0;
 	looped = false;
 	stopping = false;
-	fade_time = 0.5;
+	fade_time = 0.3;
 	fade_start = tick();
 
 	load_sequence(id: string | KeyframeSequence | Keyframe) {
@@ -157,7 +159,7 @@ export class CanimTrack {
 	time = 0;
 	length = 0;
 	looped = false;
-	fade_time = 0.5;
+	fade_time = 0.3;
 	transition_disable_all = false;
 	playing = false;
 
@@ -191,6 +193,7 @@ export class CanimTrack {
 
 			this.sequence = actual_sequence;
 			this.length = highest_keyframe.time;
+
 			// roblox-ts types fucked up, https://developer.roblox.com/en-us/api-reference/property/KeyframeSequence/Loop
 			this.looped = (sequence as unknown as { Loop: boolean }).Loop;
 			this.last_keyframe = highest_keyframe;
@@ -226,6 +229,8 @@ export class Canim {
 	model?: Model;
 	maid = new Maid();
 	debug: string[] = [];
+
+	fadeout_easing = easing.quad_in_out;
 
 	constructor() {}
 
@@ -350,6 +355,30 @@ export class Canim {
 						for (const [_, value] of pairs(track.last_keyframe.children)) {
 							this.transitions[value.name] ??= [];
 							if (!track.transition_disable[value.name] && !track.transition_disable_all) {
+								const bone = this.identified_bones[value.name];
+								let cframe = value.cframe;
+
+								// taken from below
+								if (
+									bone &&
+									track.rebase_target &&
+									track.rebase_target.keyframe &&
+									track.rebase_target.keyframe.children[bone.Part1!.Name]
+								) {
+									if (
+										track.rebase_basis &&
+										track.rebase_basis.keyframe &&
+										track.rebase_basis.keyframe.children[bone.Part1!.Name]
+									) {
+										let basis = track.rebase_basis.keyframe.children[bone.Part1!.Name].cframe;
+										cframe = cframe.mul(basis.Inverse());
+									} else {
+										cframe = cframe.mul(
+											track.rebase_target.keyframe!.children[bone.Part1!.Name].cframe.Inverse()
+										);
+									}
+								}
+
 								this.transitions[value.name]!.push({
 									start: tick(),
 									finish: tick() + track.fade_time,
@@ -493,7 +522,7 @@ export class Canim {
 						}
 
 						if (transition.finish >= tick() && weight_sum.get(index)!.size() <= 2) {
-							let alpha = ease_in_out_quad(map(tick(), transition.start, transition.finish, 1, 0));
+							let alpha = this.fadeout_easing(map(tick(), transition.start, transition.finish, 1, 0));
 							target_cframe = target_cframe.Lerp(transition.cframe, alpha);
 						} else if (transition.finish <= tick()) {
 							delete transitions[transition_index - 1];
@@ -513,7 +542,7 @@ export class Canim {
 				if (transitions) {
 					for (const [transition_index, transition] of pairs(transitions)) {
 						if (transition && transition.finish >= tick() && weight_sum.get(index)!.size() === 1) {
-							let alpha = ease_in_out_quad(map(tick(), transition.start, transition.finish, 1, 0));
+							let alpha = this.fadeout_easing(map(tick(), transition.start, transition.finish, 1, 0));
 							target_cframe = target_cframe.Lerp(transition.cframe, alpha);
 						} else {
 							delete transitions[transition_index];
@@ -533,3 +562,5 @@ export class Canim {
 		this.debug = debug;
 	}
 }
+
+export const CanimEasing = easing;

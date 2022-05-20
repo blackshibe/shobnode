@@ -1,5 +1,6 @@
 # for installing the lib
 pack.sh
+rbxts-canim-*.tgz
 
 # roblox-ts garbage
 node_modules
