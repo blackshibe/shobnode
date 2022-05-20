@@ -226,7 +226,7 @@ export class Canim {
 			| undefined;
 	} = {};
 
-	model?: Model;
+	model?: Instance;
 	maid = new Maid();
 	debug: string[] = [];
 
@@ -234,7 +234,7 @@ export class Canim {
 
 	constructor() {}
 
-	assign_model(model: Model) {
+	assign_model(model: Instance) {
 		this.model = model;
 		this.model.GetDescendants().forEach((element) => {
 			if (element.IsA("Motor6D") && element.Part1) {
@@ -325,6 +325,7 @@ export class Canim {
 		const debug: string[] = [];
 
 		// if this was done inside the first loop the rig would flicker randomly
+		// manages the playback of the animations before they are finally rendered
 		for (const [_, track] of pairs(this.playing_animations)) {
 			track.time += delta_time * track.speed;
 
@@ -349,41 +350,22 @@ export class Canim {
 
 					// transition to idle once the animation is ready for it
 					if (track.last_keyframe) {
-						if (track.queued_animation) this.play_animation(track.queued_animation.name);
 						track.finished.Fire();
 
-						for (const [_, value] of pairs(track.last_keyframe.children)) {
-							this.transitions[value.name] ??= [];
-							if (!track.transition_disable[value.name] && !track.transition_disable_all) {
-								const bone = this.identified_bones[value.name];
-								let cframe = value.cframe;
+						if (track.queued_animation) this.play_animation(track.queued_animation.name);
+						else if (!track.rebase_target) {
+							for (const [_, value] of pairs(track.last_keyframe.children)) {
+								this.transitions[value.name] ??= [];
+								if (!track.transition_disable[value.name] && !track.transition_disable_all) {
+									const bone = this.identified_bones[value.name];
+									let cframe = value.cframe;
 
-								// taken from below
-								if (
-									bone &&
-									track.rebase_target &&
-									track.rebase_target.keyframe &&
-									track.rebase_target.keyframe.children[bone.Part1!.Name]
-								) {
-									if (
-										track.rebase_basis &&
-										track.rebase_basis.keyframe &&
-										track.rebase_basis.keyframe.children[bone.Part1!.Name]
-									) {
-										let basis = track.rebase_basis.keyframe.children[bone.Part1!.Name].cframe;
-										cframe = cframe.mul(basis.Inverse());
-									} else {
-										cframe = cframe.mul(
-											track.rebase_target.keyframe!.children[bone.Part1!.Name].cframe.Inverse()
-										);
-									}
+									this.transitions[value.name]!.push({
+										start: tick(),
+										finish: tick() + track.fade_time,
+										cframe: cframe,
+									});
 								}
-
-								this.transitions[value.name]!.push({
-									start: tick(),
-									finish: tick() + track.fade_time,
-									cframe: value.cframe,
-								});
 							}
 						}
 
@@ -396,7 +378,7 @@ export class Canim {
 		}
 
 		for (const [_, track] of pairs(new_playing)) {
-			debug.push(`Track ${track.name} ${track.time}`);
+			debug.push(`Track ${track.name} ${track.looped} ${track.time}`);
 			if (!track.loaded || !track.sequence) continue;
 			if (track.time >= track.length && track.looped) track.time %= track.length;
 
@@ -460,8 +442,6 @@ export class Canim {
 							track.rebase_basis.keyframe.children[bone.Part1!.Name]
 						) {
 							let basis = track.rebase_basis.keyframe.children[bone.Part1!.Name].cframe;
-
-							// rebase blended_cframe from rebase_basis to rebase_target
 							blended_cframe = blended_cframe.mul(basis.Inverse());
 						} else {
 							blended_cframe = blended_cframe.mul(
@@ -538,17 +518,17 @@ export class Canim {
 			if (!index.Part1) continue;
 			for (const [_, data] of pairs(value)) {
 				let target_cframe = data[1];
-				let transitions = this.transitions[index.Part1.Name];
-				if (transitions) {
-					for (const [transition_index, transition] of pairs(transitions)) {
-						if (transition && transition.finish >= tick() && weight_sum.get(index)!.size() === 1) {
-							let alpha = this.fadeout_easing(map(tick(), transition.start, transition.finish, 1, 0));
-							target_cframe = target_cframe.Lerp(transition.cframe, alpha);
-						} else {
-							delete transitions[transition_index];
-						}
-					}
-				}
+				// let transitions = this.transitions[index.Part1.Name];
+				// if (transitions) {
+				// 	for (const [transition_index, transition] of pairs(transitions)) {
+				// 		if (transition && transition.finish >= tick() && weight_sum.get(index)!.size() === 1) {
+				// 			let alpha = this.fadeout_easing(map(tick(), transition.start, transition.finish, 1, 0));
+				// 			target_cframe = target_cframe.Lerp(transition.cframe, alpha);
+				// 		} else {
+				// 			delete transitions[transition_index];
+				// 		}
+				// 	}
+				// }
 
 				bone_totals.set(index, target_cframe.mul(bone_totals.get(index) || new CFrame()));
 			}
