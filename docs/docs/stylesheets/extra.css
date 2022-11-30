@@ -6,7 +6,7 @@ hr {
 body {
 	--md-primary-fg-color: rgb(69, 73, 117) !important;
 	--md-default-bg-color: rgb(37, 37, 57) !important;
-	--md-footer-bg-color: rgb(37, 37, 57) !important
+	--md-footer-bg-color: rgb(37, 37, 57) !important;
 }
 
 /* Apparently mkdocs doesn't provide an option to do this with the yml file */

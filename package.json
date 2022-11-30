@@ -1,7 +1,7 @@
 {
-	"name": "@rbxts/canim",
-	"version": "0.2.0",
-	"description": "Custom animator implementation that allows you to have more control over your animations.",
+	"name": "@rbxts/shobnode",
+	"version": "0.1.0",
+	"description": "TODO",
 	"main": "out/init.lua",
 	"types": "out/index.d.ts",
 	"scripts": {
@@ -26,7 +26,12 @@
 		"access": "public"
 	},
 	"devDependencies": {
-		"@rbxts/compiler-types": "^1.2.7-types.0",
+		"@rbxts/compiler-types": "^2.0.4-types.0",
 		"@rbxts/types": "^1.0.551"
+	},
+	"dependencies": {
+		"@rbxts/roact": "^1.4.4-ts.0",
+		"@rbxts/roact-hooks": "^0.4.1-ts.2",
+		"gh-pages": "^4.0.0"
 	}
 }

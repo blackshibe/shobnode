@@ -1,44 +1,75 @@
-# canim
+# shobnode
 
-canim is a roblox-ts library that allows you to have more control over your animations.
-Documentation is available at https://blackshibe.github.io/canim/
+Simple declarative debugging library with an imperative interface for Roblox projects used extensively in Deadline.
+
+## examples
 
 ```ts
-import { Canim } from "@rbxts/canim";
+// imperative
+import { Shobnode } from "@rbxts/shobnode";
 
-// R15 default dummy
-let character = game.GetService("Workspace").WaitForChild("dummy") as Model;
-let animator = new Canim();
-animator.assign_model(character);
+Shobnode.setup();
+Shobnode.display_variable(1, `Hello world, I will appear in the top left corner of the screen.`);
+Shobnode.display_variable(2, `Hello world.`);
 
-// loading poses is the same, but only the 1st keyframe is used.
-let animation = animator.load_animation("dance", 1, "rbxassetid://507771019");
-animation.finished_loading.Wait();
-
-// the animation will play with lowered rotation and with unaffected position
-animation.looped = true;
-animation.bone_weights.__CANIM_DEFAULT_BONE_WEIGHT = [
-    // x y z
-    [1, 1, 1],
-    // rx ry rz
-    [0.5, 0.5, 0.5],
-];
-
-animation.keyframe_reached.Connect((name) => {
-    print("marker reached:", name);
+LogService.MessageOut.Connect((message, _type) => {
+	Shobnode.log(message, _type);
 });
+```
 
-animation.started.Connect(() => {
-    print("started");
-});
+```ts
+import { Shobnode } from "@rbxts/shobnode";
 
-animation.finished.Connect(() => {
-    print("finished");
-});
+const catch_error_while = (reason: string, func: () => void, err_occured?: () => void) => {
+	xpcall(func, (err) => {
+		let data: string[] = [
+			`something went very wrong while ${reason}`,
+			"please let the developers know about the following:",
+			"",
+		];
 
-animator.play_animation("dance");
-game.GetService("RunService").RenderStepped.Connect((delta_time) => {
-    animator.update(delta_time);
-});
+		print(err);
 
+		(err as string).split("\n").forEach((element) => data.push(element));
+		data.push("this error will disappear in 20 seconds.");
+		Shobnode.display_node(100, new UDim2(0.5, 0, 0.5, 0), data, new Color3(1, 0, 0), true);
+
+		task.delay(20, () => {
+			Shobnode.display_node(100, new UDim2(), []);
+		});
+		err_occured?.();
+	});
+};
+
+catch_error_while(
+	"doing something important",
+	() => {
+		throw "oops";
+	},
+	() => {
+		print("I'm handling it");
+	}
+);
+```
+
+```tsx
+// declarative - hoarcekat story
+import Roact from "@rbxts/roact";
+import ShobnodeNode from "@rbxts/shobnode/out/ui/ShobnodeNode";
+import ShobnodeTable from "@rbxts/shobnode/out/ui/ShobnodeTable";
+
+export = (target: Instance) => {
+	let sheet = Roact.mount(
+		<frame>
+			<ShobnodeTable position={new UDim2()} header={"Header"} data={["data", "lol", "hi", () => {}]} />
+			<ShobnodeNode
+				data={["line 1", "line 2"]}
+				position={Roact.createBinding(new UDim2(0.5, 0, 0.5, 100))[0]}
+				color={new Color3(1, 0, 0)}
+			/>
+		</frame>,
+		target
+	);
+	return () => Roact.unmount(sheet);
+};
 ```
