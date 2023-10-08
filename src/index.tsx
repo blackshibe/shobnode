@@ -52,6 +52,7 @@ const convert_value_to_udim2 = (pos: Vector2 | Vector3 | BasePart | Attachment |
 // this library is very complicated as you can see
 export namespace Shobnode {
 	const ui = new Instance("ScreenGui");
+	ui.IgnoreGuiInset = true;
 
 	let main_node_tree: Roact.Tree;
 	const main_node_data: string[] = [];
@@ -103,16 +104,15 @@ export namespace Shobnode {
 		if (node) {
 			if (data) {
 				node.position[1](convert_value_to_udim2(adornee));
-				if (data !== node.data)
-					Roact.update(
-						node.tree,
-						<Node
-							anchor_to_middle={anchor_to_middle}
-							color={node.color || configuration.ui_text_color}
-							position={node.position[0]}
-							data={data}
-						/>
-					);
+				Roact.update(
+					node.tree,
+					<Node
+						anchor_to_middle={anchor_to_middle}
+						color={node.color || configuration.ui_text_color}
+						position={node.position[0]}
+						data={data}
+					/>
+				);
 			} else {
 				Roact.unmount(node.tree);
 				delete positioned_nodes[sign];
