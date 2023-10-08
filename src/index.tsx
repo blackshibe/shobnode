@@ -108,7 +108,7 @@ export namespace Shobnode {
 					node.tree,
 					<Node
 						anchor_to_middle={anchor_to_middle}
-						color={node.color || configuration.ui_text_color}
+						color={color || node.color || configuration.ui_text_color}
 						position={node.position[0]}
 						data={data}
 					/>
